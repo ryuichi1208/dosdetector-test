@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+  httpd:
+    container_name: httpd001
+    build:
+      context: httpd
+      dockerfile: Dockerfile
+    ports:
+      - target: 80
+        published: 9990
+        protocol: tcp
+        mode: host
+    volumes:
+      - type: bind
+        source: ./httpd/public-html/
+        target: /usr/local/apache2/htdocs/
+      - type: bind
+        source: ./httpd/conf/dos-detecting-http.conf
+        target: /usr/local/apache2/conf/httpd.conf
+      - type: bind
+        source: ./httpd/conf/module.conf
+        target: /usr/local/apache2/conf/module.conf
+      - type: bind
+        source: ./httpd/conf/dos_atck.conf
+        target: /usr/local/apache2/conf/dos_atck.conf
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.3
+
+  attacker:
+    container_name: attcker
+    build:
+      context: attacker
+      dockerfile: Dockerfile
+    tty: true
+    extra_hosts:
+      - sample.host.jp:172.30.0.3
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.2
+
+networks:
+  app_net:
+    ipam:
+     driver: default
+     config:
+       - subnet: 172.30.0.0/24
