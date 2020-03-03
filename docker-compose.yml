@@ -11,6 +11,8 @@ services:
         published: 9990
         protocol: tcp
         mode: host
+    environment:
+      TZ: Asia/Tokyo
     volumes:
       - type: bind
         source: ./httpd/public-html/
@@ -34,6 +36,8 @@ services:
       context: attacker
       dockerfile: Dockerfile
     tty: true
+    environment:
+      TZ: Asia/Tokyo
     extra_hosts:
       - sample.host.jp:172.30.0.3
     networks:
